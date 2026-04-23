@@ -162,7 +162,7 @@ async def callback_services(callback: CallbackQuery) -> None:
 async def callback_contacts(callback: CallbackQuery) -> None:
     contacts_text = (
         "📍 <b>Наш адрес:</b>\n"
-        f"{Калдаякова 4}\n\n"
+        "{Калдаякова 4}\n\n"
         "📞 <b>Телефон:</b>\n"
         f"{87754709410}"
     )
