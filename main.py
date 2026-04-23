@@ -5,12 +5,14 @@ import os
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
+from aiogram.client.default import DefaultBotProperties  # <--- ВОТ ЭТА СТРОЧКА СПАСЕТ СИТУАЦИЮ
 from aiogram.types import (
     Message,
     CallbackQuery,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
+
 
 # ============================================================
 #  ⚙️  НАСТРОЙКИ — берутся из переменных окружения Railway
@@ -87,7 +89,7 @@ def main_keyboard() -> InlineKeyboardMarkup:
 #  БОТ И ДИСПЕТЧЕР
 # ============================================================
 
-bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
+bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 
 # ============================================================
