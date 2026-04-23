@@ -16,7 +16,7 @@ from aiogram.types import (
 #  ⚙️  НАСТРОЙКИ — берутся из переменных окружения Railway
 # ============================================================
 
-BOT_TOKEN = os.getenv(8513130101:AAE0MoCgDpVhZS3KQaicTLJ4-PcmkOvLWzs)
+BOT_TOKEN = os.getenv("8513130101:AAE0MoCgDpVhZS3KQaicTLJ4-PcmkOvLWzs")
 ADMIN_ID = int(os.getenv(829018731))
 
 # 🔗 Вставьте сюда прямую ссылку на вашу страницу записи в DIKIDI
