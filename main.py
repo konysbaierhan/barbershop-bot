@@ -17,7 +17,7 @@ from aiogram.types import (
 # ============================================================
 
 BOT_TOKEN = os.getenv("8513130101:AAE0MoCgDpVhZS3KQaicTLJ4-PcmkOvLWzs")
-ADMIN_ID = int(os.getenv(829018731))
+ADMIN_ID = 829018731
 
 # 🔗 Вставьте сюда прямую ссылку на вашу страницу записи в DIKIDI
 DIKIDI_URL = "https://dikidi.net/2055441"
