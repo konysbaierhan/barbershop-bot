@@ -5,17 +5,17 @@ import os
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
-from aiogram.client.default import DefaultBotProperties  # <--- ВОТ ЭТА СТРОЧКА СПАСЕТ СИТУАЦИЮ
+from aiogram.client.default import DefaultBotProperties
 from aiogram.types import (
     Message,
     CallbackQuery,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
+    WebAppInfo,
 )
 
-
 # ============================================================
-#  ⚙️  НАСТРОЙКИ — берутся из переменных окружения Railway
+#  ⚙️  НАСТРОЙКИ
 # ============================================================
 
 BOT_TOKEN = "8513130101:AAE0MoCgDpVhZS3KQaicTLJ4-PcmkOvLWzs"
@@ -25,10 +25,11 @@ ADMIN_ID = 829018731
 DIKIDI_URL = "https://dikidi.net/2055441"
 
 # 📍 Контактные данные барбершопа
-BARBERSHOP_ADDRESS = "ул. Калдаякова, 4, Астана"
-BARBERSHOP_PHONE = "+7 (777) 000-00-00"
+BARBERSHOP_ADDRESS = "ул. Калдаякова 4, Астана"
+BARBERSHOP_PHONE = "+7 (775) 470-94-10"
 
-DB_FILE = "users.db"
+# 💾 Умный путь к БД: Защита от удаления на Railway (Volume)
+DB_FILE = "/data/users.db" if os.path.exists("/data") else "users.db"
 
 # ============================================================
 #  ЛОГИРОВАНИЕ
@@ -55,7 +56,7 @@ def init_db() -> None:
             """
         )
         conn.commit()
-    logger.info("База данных инициализирована.")
+    logger.info(f"База данных инициализирована по пути: {DB_FILE}")
 
 
 def save_user(user_id: int) -> None:
@@ -79,7 +80,8 @@ def get_all_user_ids() -> list[int]:
 def main_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="✂️ Записаться онлайн", url=DIKIDI_URL)],
+            # 👇 Та самая WebApp кнопка (откроет DIKIDI внутри Телеграма)
+            [InlineKeyboardButton(text="✂️ Записаться онлайн", web_app=WebAppInfo(url=DIKIDI_URL))],
             [InlineKeyboardButton(text="💈 Услуги и прайс", callback_data="services")],
             [InlineKeyboardButton(text="📍 Контакты", callback_data="contacts")],
         ]
@@ -109,7 +111,6 @@ async def cmd_start(message: Message) -> None:
 @dp.message(Command("broadcast"))
 async def cmd_broadcast(message: Message) -> None:
     if message.from_user.id != ADMIN_ID:
-        await message.answer("⛔️ У вас нет прав на использование этой команды.")
         return
 
     parts = message.text.split(maxsplit=1)
@@ -139,12 +140,14 @@ async def cmd_broadcast(message: Message) -> None:
         except Exception as e:
             logger.warning(f"Не удалось отправить {user_id}: {e}")
             fail_count += 1
+        
+        # Защита от блокировки Телеграмом (лимит сообщений в секунду)
         await asyncio.sleep(0.05)
 
     await message.answer(
         f"✅ Готово!\n"
         f"Доставлено: <b>{success_count}</b>\n"
-        f"Не доставлено: <b>{fail_count}</b>"
+        f"Не доставлено (заблокировали бота): <b>{fail_count}</b>"
     )
 
 
@@ -164,9 +167,9 @@ async def callback_services(callback: CallbackQuery) -> None:
 async def callback_contacts(callback: CallbackQuery) -> None:
     contacts_text = (
         "📍 <b>Наш адрес:</b>\n"
-        "{Калдаякова 4}\n\n"
+        f"{BARBERSHOP_ADDRESS}\n\n"
         "📞 <b>Телефон:</b>\n"
-        f"{87754709410}"
+        f"{BARBERSHOP_PHONE}"
     )
     await callback.message.answer(contacts_text)
     await callback.answer()
